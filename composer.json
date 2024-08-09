@@ -1,0 +1,40 @@
+{
+    "name": "nytris/memcached",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "files": [
+            "src/bootstrap.php"
+        ],
+        "psr-4": {
+            "Nytris\\Memcached\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nytris\\Memcached\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.1",
+        "ext-memcached": "*",
+        "asmblah/php-code-shift": "^0.1.14",
+        "nytris/nytris": "^0.1",
+        "react/promise": "^3.2 || ^2.11",
+        "react/socket": "^1.16.0",
+        "tasque/event-loop": "^0.1"
+    },
+    "require-dev": {
+        "mockery/mockery": "1.6.11",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-mockery": "^1.1",
+        "phpunit/phpunit": "^10.2"
+    },
+    "config": {
+        "platform": {
+            "php": "8.1",
+            "ext-memcached": "3.2.0"
+        },
+        "sort-packages": true
+    }
+}
