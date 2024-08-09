@@ -70,4 +70,50 @@ class SavePathProcessorTest extends AbstractTestCase
             $this->savePathProcessor->processSessionSavePath('10.20.30.40:1234,4.5.6.7:8910')
         );
     }
+
+    public function testProcessSessionSavePathIgnoresOptionalHostWeight(): void
+    {
+        $this->clusterConfigClient->allows()
+            ->getClusterConfig('10.20.30.40', 1234)
+            ->andReturn(mock(ClusterConfigInterface::class, [
+                'getNodes' => [
+                    mock(ClusterNodeInterface::class, [
+                        'getHost' => '100.1.2.3',
+                        'getPort' => 321,
+                    ]),
+                    mock(ClusterNodeInterface::class, [
+                        'getHost' => '200.3.2.1',
+                        'getPort' => 123,
+                    ]),
+                ],
+            ]));
+
+        static::assertSame(
+            '100.1.2.3:321,200.3.2.1:123',
+            $this->savePathProcessor->processSessionSavePath('10.20.30.40:1234:42')
+        );
+    }
+
+    public function testProcessSessionSavePathSupportsPortBeingOmitted(): void
+    {
+        $this->clusterConfigClient->allows()
+            ->getClusterConfig('10.20.30.40', 11211)
+            ->andReturn(mock(ClusterConfigInterface::class, [
+                'getNodes' => [
+                    mock(ClusterNodeInterface::class, [
+                        'getHost' => '100.1.2.3',
+                        'getPort' => 321,
+                    ]),
+                    mock(ClusterNodeInterface::class, [
+                        'getHost' => '200.3.2.1',
+                        'getPort' => 123,
+                    ]),
+                ],
+            ]));
+
+        static::assertSame(
+            '100.1.2.3:321,200.3.2.1:123',
+            $this->savePathProcessor->processSessionSavePath('10.20.30.40')
+        );
+    }
 }

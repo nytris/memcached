@@ -24,6 +24,8 @@ use Nytris\Memcached\Cluster\ClusterConfigClientInterface;
  */
 class SavePathProcessor implements SavePathProcessorInterface
 {
+    public const DEFAULT_MEMCACHED_PORT = 11211;
+
     public function __construct(
         private readonly ClusterConfigClientInterface $clusterConfigClient
     ) {
@@ -34,13 +36,22 @@ class SavePathProcessor implements SavePathProcessorInterface
      */
     public function processSessionSavePath(string $savePath): string
     {
-        if (preg_match('/^(?<host>[^:]+):(?<port>\d+)$/', $savePath, $matches) === 0) {
+        if (
+            preg_match(
+                '/^(?<host>[^:]+)(?::(?<port>\d+))?(?::(?<weight>\d+))?$/',
+                $savePath,
+                $matches
+            ) === 0
+        ) {
             // Save path is not a single host, so ignore auto-discovery.
             return $savePath;
         }
 
         // Otherwise perform auto-discovery if applicable.
-        $clusterConfig = $this->clusterConfigClient->getClusterConfig($matches['host'], (int)$matches['port']);
+        $clusterConfig = $this->clusterConfigClient->getClusterConfig(
+            $matches['host'],
+            (int)($matches['port'] ?? self::DEFAULT_MEMCACHED_PORT)
+        );
 
         /** @var string[] $processedSavePathHosts */
         $processedSavePathHosts = [];
