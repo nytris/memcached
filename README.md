@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/nytris/memcached/workflows/CI/badge.svg)](https://github.com/nytris/memcached/actions?query=workflow%3ACI)
 
-Memcached with dynamic mode/autodiscovery support for Memcached AWS ElastiCache.
+Standard PECL `ext-memcached` with dynamic mode/auto-discovery support for Memcached AWS ElastiCache.
 
 ## Why?
 Use the stable and performant standard ext-memcached from PECL while still taking advantage of AWS ElastiCache auto-discovery.
@@ -45,7 +45,8 @@ use Tasque\TasquePackage;
 $bootConfig = new BootConfig(new PlatformConfig(__DIR__ . '/var/cache/nytris/'));
 
 $bootConfig->installPackage(new TasquePackage(
-    preemptive: false // Disabled for this example, but also works with Tasque in preemptive mode.
+    // Disabled for this example, but also works with Tasque in preemptive mode.
+    preemptive: false
 ));
 $bootConfig->installPackage(new TasqueEventLoopPackage());
 $bootConfig->installPackage(new MemcachedPackage(
