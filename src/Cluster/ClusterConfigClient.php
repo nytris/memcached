@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Nytris\Memcached\Cluster;
 
+use Nytris\Memcached\Exception\InvalidVersionResponseException;
 use Nytris\Memcached\Exception\UnsupportedCommandException;
 use Nytris\Memcached\Library\ClientMode;
 use Nytris\Memcached\Memcached\IoInterface;
 use React\Socket\ConnectorInterface;
-use RuntimeException;
 use Tasque\EventLoop\TasqueEventLoop;
 
 /**
@@ -56,12 +56,16 @@ class ClusterConfigClient implements ClusterConfigClientInterface
         $versionResponse = $this->io->sendCommand($connection, 'version');
 
         if (preg_match('/^VERSION\s/', $versionResponse) === 0) {
-            throw new RuntimeException(sprintf('Unexpected "version" command response: "%s"', $versionResponse));
+            throw new InvalidVersionResponseException(sprintf(
+                'Unexpected "version" command response: "%s"', $versionResponse)
+            );
         }
 
         try {
             $clusterConfigResponse = $this->io->sendCommand($connection, 'config get cluster', multiLineResponse: true);
         } catch (UnsupportedCommandException) {
+            $connection->close();
+
             // Must be a non-AWS ElastiCache Memcached instance, fall back to just using the given server.
             return new ClusterConfig(
                 version: null,
