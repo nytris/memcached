@@ -15,6 +15,7 @@ namespace Nytris\Memcached;
 
 use Asmblah\PhpCodeShift\Shifter\Filter\FileFilter;
 use Asmblah\PhpCodeShift\Shifter\Filter\FileFilterInterface;
+use Asmblah\PhpCodeShift\Shifter\Filter\MultipleFilter;
 use Nytris\Memcached\Library\ClientMode;
 
 /**
@@ -28,9 +29,14 @@ class MemcachedPackage implements MemcachedPackageInterface
 {
     public function __construct(
         private readonly ClientMode $clientMode = ClientMode::STATIC,
-        private readonly FileFilterInterface $memcachedClassHookFilter = new FileFilter(
-            '**/vendor/tedivm/stash/src/Stash/Driver/Sub/Memcached.php'
-        )
+        private readonly FileFilterInterface $memcachedClassHookFilter = new MultipleFilter([
+            new FileFilter(
+                '**/vendor/symfony/cache/Adapter/MemcachedAdapter.php'
+            ),
+            new FileFilter(
+                '**/vendor/tedivm/stash/src/Stash/Driver/Sub/Memcached.php'
+            ),
+        ])
     ) {
     }
 

@@ -16,8 +16,11 @@ Additionally, [session connections can also take advantage of auto-discovery](#s
 When adding a server, if dynamic mode is enabled for this package in `nytris.config.php`,
 the AWS ElastiCache auto-discovery feature will be used, and all discovered nodes added to the `Memcached` instance.
 
-Currently, by default the reference to `Memcached` [in Stash's Memcached sub-adapter](https://github.com/tedious/Stash/blob/e02ac18/src/Stash/Driver/Sub/Memcached.php#L67)
-will be hooked, but this can be customised using `new MemcachedPackage(memcachedClassHookFilter: ...)`.
+Currently, by default the following references to `Memcached` will be hooked,
+but this can be customised using `new MemcachedPackage(memcachedClassHookFilter: ...)`:
+
+- [Stash's Memcached sub-adapter](https://github.com/tedious/Stash/blob/e02ac18/src/Stash/Driver/Sub/Memcached.php#L67)
+- [Symfony Cache's Memcached adapter](https://github.com/symfony/cache/blob/5460647/Adapter/MemcachedAdapter.php#L99)
 
 ## Usage
 Install this package with Composer:
