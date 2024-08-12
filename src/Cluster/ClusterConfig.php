@@ -21,7 +21,7 @@ namespace Nytris\Memcached\Cluster;
 class ClusterConfig implements ClusterConfigInterface
 {
     /**
-     * @param int $version
+     * @param int|null $version
      * @param ClusterNodeInterface[] $nodes
      */
     public function __construct(
