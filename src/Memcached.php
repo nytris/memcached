@@ -18,6 +18,7 @@ use InvalidArgumentException;
 use LogicException;
 use Nytris\Core\Package\PackageContextInterface;
 use Nytris\Core\Package\PackageInterface;
+use Nytris\Memcached\Cluster\CachingClusterConfigClient;
 use Nytris\Memcached\Cluster\ClusterConfigClient;
 use Nytris\Memcached\Cluster\ClusterConfigInterface;
 use Nytris\Memcached\Cluster\ClusterConfigParser;
@@ -117,14 +118,16 @@ class Memcached implements MemcachedInterface
 
         self::bootstrap();
 
-        $clusterConfigClient = new ClusterConfigClient(
-            $package->getClientMode(),
-            new Connector([
-                'dns' => true,
-                'happy_eyeballs' => false,
-            ]),
-            new Io(),
-            new ClusterConfigParser()
+        $clusterConfigClient = new CachingClusterConfigClient(
+            new ClusterConfigClient(
+                $package->getClientMode(),
+                new Connector([
+                    'dns' => true,
+                    'happy_eyeballs' => false,
+                ]),
+                new Io(),
+                new ClusterConfigParser()
+            )
         );
 
         self::$library = new Library(
