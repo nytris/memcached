@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Nytris\Memcached\Memcached;
 
 use Exception;
-use LogicException;
+use Nytris\Memcached\Exception\ConnectionClosedUnexpectedlyException;
 use Nytris\Memcached\Exception\UnsupportedCommandException;
 use React\Promise\Promise;
 use React\Socket\ConnectionInterface;
@@ -54,7 +54,10 @@ class Io implements IoInterface
 
                             if ($data === "ERROR\r\n") {
                                 $reject(new UnsupportedCommandException($command));
-                            }  elseif ($multiLineResponse) {
+                                return;
+                            }
+
+                            if ($multiLineResponse) {
                                 if (str_ends_with($data, "\r\nEND\r\n")) {
                                     $resolve(substr($data, 0, -7));
                                 }
@@ -71,7 +74,7 @@ class Io implements IoInterface
                     });
 
                     $connection->on('close', function () use ($reject) {
-                        $reject(new LogicException('Connection was closed unexpectedly'));
+                        $reject(new ConnectionClosedUnexpectedlyException('Connection was closed unexpectedly'));
                     });
 
                     $connection->write($command . "\r\n");
