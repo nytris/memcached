@@ -35,7 +35,7 @@ interface MemcachedPackageInterface extends PackageInterface
     /**
      * Fetches the ReactPHP socket connector to use.
      */
-    public function getConnector(): ConnectorInterface;
+    public function getConnector(string $packageCachePath): ConnectorInterface;
 
     /**
      * Fetches the filter for which files to hook the Memcached built-in class for.

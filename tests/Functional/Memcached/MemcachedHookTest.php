@@ -63,7 +63,9 @@ class MemcachedHookTest extends AbstractTestCase
             ])
         );
         Memcached::install(
-            mock(PackageContextInterface::class),
+            mock(PackageContextInterface::class, [
+                'getPackageCachePath' => '/my/cache/path',
+            ]),
             mock(MemcachedPackageInterface::class, [
                 // Enable dynamic mode, even though this will not be available,
                 // to test that we can correctly fall back when connecting to a non-ElastiCache Memcached instance.

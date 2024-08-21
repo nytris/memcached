@@ -62,7 +62,9 @@ class SymfonyCacheMemcachedAdapterHookTest extends AbstractTestCase
             ])
         );
         Memcached::install(
-            mock(PackageContextInterface::class),
+            mock(PackageContextInterface::class, [
+                'getPackageCachePath' => '/my/cache/path',
+            ]),
             new MemcachedPackage(clientMode: ClientMode::DYNAMIC)
         );
 

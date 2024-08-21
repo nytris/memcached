@@ -16,6 +16,7 @@ namespace Nytris\Memcached;
 use Asmblah\PhpCodeShift\Shifter\Filter\FileFilter;
 use Asmblah\PhpCodeShift\Shifter\Filter\FileFilterInterface;
 use Asmblah\PhpCodeShift\Shifter\Filter\MultipleFilter;
+use Closure;
 use Nytris\Memcached\Library\ClientMode;
 use React\Socket\Connector;
 use React\Socket\ConnectorInterface;
@@ -39,10 +40,10 @@ class MemcachedPackage implements MemcachedPackageInterface
                 '**/vendor/tedivm/stash/src/Stash/Driver/Sub/Memcached.php'
             ),
         ]),
-        private readonly ConnectorInterface $connector = new Connector([
-            'dns' => true,
-            'happy_eyeballs' => false,
-        ])
+        /**
+         * @var Closure(string): ConnectorInterface
+         */
+        private readonly ?Closure $connectorFactory = null
     ) {
     }
 
@@ -57,9 +58,14 @@ class MemcachedPackage implements MemcachedPackageInterface
     /**
      * @inheritDoc
      */
-    public function getConnector(): ConnectorInterface
+    public function getConnector(string $packageCachePath): ConnectorInterface
     {
-        return $this->connector;
+        return $this->connectorFactory !== null ?
+            ($this->connectorFactory)($packageCachePath) :
+            new Connector([
+                'dns' => true,
+                'happy_eyeballs' => false,
+            ]);
     }
 
     /**

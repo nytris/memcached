@@ -53,7 +53,9 @@ TasqueEventLoop::install(
     ])
 );
 Memcached::install(
-    mock(PackageContextInterface::class),
+    mock(PackageContextInterface::class, [
+        'getPackageCachePath' => '/my/cache/path',
+    ]),
     mock(MemcachedPackageInterface::class, [
         'getClientMode' => ClientMode::DYNAMIC,
         'getConnector' => new Connector(),

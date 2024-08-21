@@ -120,7 +120,7 @@ class Memcached implements MemcachedInterface
         $clusterConfigClient = new CachingClusterConfigClient(
             new ClusterConfigClient(
                 $package->getClientMode(),
-                $package->getConnector(),
+                $package->getConnector($packageContext->getPackageCachePath()),
                 new Io(),
                 new ClusterConfigParser()
             )
