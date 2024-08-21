@@ -26,7 +26,7 @@ but this can be customised using `new MemcachedPackage(memcachedClassHookFilter:
 Install this package with Composer:
 
 ```shell
-$ composer install nytris/memcached tasque/tasque tasque/event-loop
+$ composer require nytris/memcached tasque/tasque tasque/event-loop
 ```
 
 Configure Nytris platform:

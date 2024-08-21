@@ -26,6 +26,7 @@ use Nytris\Memcached\Tests\AbstractTestCase;
 use Stash\Driver\Memcache;
 use Stash\Pool;
 use Tasque\Core\Scheduler\ContextSwitch\ManualStrategy;
+use Tasque\EventLoop\ContextSwitch\FutureTickScheduler;
 use Tasque\EventLoop\TasqueEventLoop;
 use Tasque\EventLoop\TasqueEventLoopPackageInterface;
 use Tasque\Tasque;
@@ -54,7 +55,12 @@ class StashMemcachedSubDriverHookTest extends AbstractTestCase
         );
         TasqueEventLoop::install(
             mock(PackageContextInterface::class),
-            mock(TasqueEventLoopPackageInterface::class)
+            mock(TasqueEventLoopPackageInterface::class, [
+                'getContextSwitchInterval' => TasqueEventLoopPackageInterface::DEFAULT_CONTEXT_SWITCH_INTERVAL,
+                // Switch every tick to make tests deterministic.
+                'getContextSwitchScheduler' => new FutureTickScheduler(),
+                'getEventLoop' => null,
+            ])
         );
         Memcached::install(
             mock(PackageContextInterface::class),
