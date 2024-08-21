@@ -24,6 +24,7 @@ use Nytris\Memcached\Memcached;
 use Nytris\Memcached\MemcachedPackageInterface;
 use Nytris\Memcached\Session\NativeMemcachedSessionHandler;
 use Nytris\Memcached\Session\SavePathProcessor;
+use React\Socket\Connector;
 use Tasque\Core\Scheduler\ContextSwitch\ManualStrategy;
 use Tasque\EventLoop\ContextSwitch\FutureTickScheduler;
 use Tasque\EventLoop\TasqueEventLoop;
@@ -55,6 +56,7 @@ Memcached::install(
     mock(PackageContextInterface::class),
     mock(MemcachedPackageInterface::class, [
         'getClientMode' => ClientMode::DYNAMIC,
+        'getConnector' => new Connector(),
         'getMemcachedClassHookFilter' => $memcachedClassHookFilter,
     ])
 );

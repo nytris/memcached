@@ -67,6 +67,7 @@ class IoTest extends AbstractTestCase
                 // Enable dynamic mode, even though this will not be available,
                 // to test that we can correctly fall back when connecting to a non-ElastiCache Memcached instance.
                 'getClientMode' => ClientMode::DYNAMIC,
+                'getConnector' => new Connector(),
                 'getMemcachedClassHookFilter' => new FileFilter(dirname(__DIR__) . '/Harness/**')
             ])
         );

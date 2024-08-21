@@ -16,6 +16,7 @@ namespace Nytris\Memcached;
 use Asmblah\PhpCodeShift\Shifter\Filter\FileFilterInterface;
 use Nytris\Core\Package\PackageInterface;
 use Nytris\Memcached\Library\ClientMode;
+use React\Socket\ConnectorInterface;
 
 /**
  * Interface MemcachedPackageInterface.
@@ -30,6 +31,11 @@ interface MemcachedPackageInterface extends PackageInterface
      * Fetches whether to use dynamic or static Memcached client mode.
      */
     public function getClientMode(): ClientMode;
+
+    /**
+     * Fetches the ReactPHP socket connector to use.
+     */
+    public function getConnector(): ConnectorInterface;
 
     /**
      * Fetches the filter for which files to hook the Memcached built-in class for.

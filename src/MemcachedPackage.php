@@ -17,6 +17,8 @@ use Asmblah\PhpCodeShift\Shifter\Filter\FileFilter;
 use Asmblah\PhpCodeShift\Shifter\Filter\FileFilterInterface;
 use Asmblah\PhpCodeShift\Shifter\Filter\MultipleFilter;
 use Nytris\Memcached\Library\ClientMode;
+use React\Socket\Connector;
+use React\Socket\ConnectorInterface;
 
 /**
  * Class MemcachedPackage.
@@ -36,6 +38,10 @@ class MemcachedPackage implements MemcachedPackageInterface
             new FileFilter(
                 '**/vendor/tedivm/stash/src/Stash/Driver/Sub/Memcached.php'
             ),
+        ]),
+        private readonly ConnectorInterface $connector = new Connector([
+            'dns' => true,
+            'happy_eyeballs' => false,
         ])
     ) {
     }
@@ -46,6 +52,14 @@ class MemcachedPackage implements MemcachedPackageInterface
     public function getClientMode(): ClientMode
     {
         return $this->clientMode;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getConnector(): ConnectorInterface
+    {
+        return $this->connector;
     }
 
     /**

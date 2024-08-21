@@ -28,7 +28,6 @@ use Nytris\Memcached\Library\Library;
 use Nytris\Memcached\Library\LibraryInterface;
 use Nytris\Memcached\Memcached\Io;
 use Nytris\Memcached\Session\SavePathProcessor;
-use React\Socket\Connector;
 
 /**
  * Class Memcached.
@@ -121,10 +120,7 @@ class Memcached implements MemcachedInterface
         $clusterConfigClient = new CachingClusterConfigClient(
             new ClusterConfigClient(
                 $package->getClientMode(),
-                new Connector([
-                    'dns' => true,
-                    'happy_eyeballs' => false,
-                ]),
+                $package->getConnector(),
                 new Io(),
                 new ClusterConfigParser()
             )
