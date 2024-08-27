@@ -20,6 +20,7 @@
         "ext-memcached": "*",
         "asmblah/php-code-shift": "^0.1.14",
         "nytris/nytris": "^0.1",
+        "react/cache": "^1.2",
         "react/promise": "^3.2 || ^2.11",
         "react/socket": "^1.16.0",
         "tasque/event-loop": "^0.1"

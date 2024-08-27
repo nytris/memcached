@@ -27,6 +27,7 @@ use Nytris\Memcached\Environment\EnvironmentInterface;
 use Nytris\Memcached\Library\Library;
 use Nytris\Memcached\Library\LibraryInterface;
 use Nytris\Memcached\Memcached\Io;
+use Nytris\Memcached\Serialiser\Serialiser;
 use Nytris\Memcached\Session\SavePathProcessor;
 
 /**
@@ -123,7 +124,9 @@ class Memcached implements MemcachedInterface
                 $package->getConnector($packageContext->getPackageCachePath()),
                 new Io(),
                 new ClusterConfigParser()
-            )
+            ),
+            new Serialiser(),
+            $package->getClusterConfigCache($packageContext->getPackageCachePath())
         );
 
         self::$library = new Library(

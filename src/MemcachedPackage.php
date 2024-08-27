@@ -18,6 +18,8 @@ use Asmblah\PhpCodeShift\Shifter\Filter\FileFilterInterface;
 use Asmblah\PhpCodeShift\Shifter\Filter\MultipleFilter;
 use Closure;
 use Nytris\Memcached\Library\ClientMode;
+use React\Cache\ArrayCache;
+use React\Cache\CacheInterface;
 use React\Socket\Connector;
 use React\Socket\ConnectorInterface;
 
@@ -43,7 +45,11 @@ class MemcachedPackage implements MemcachedPackageInterface
         /**
          * @var Closure(string): ConnectorInterface
          */
-        private readonly ?Closure $connectorFactory = null
+        private readonly ?Closure $connectorFactory = null,
+        /**
+         * @var Closure(string): CacheInterface
+         */
+        private readonly ?Closure $clusterConfigCacheFactory = null
     ) {
     }
 
@@ -53,6 +59,16 @@ class MemcachedPackage implements MemcachedPackageInterface
     public function getClientMode(): ClientMode
     {
         return $this->clientMode;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getClusterConfigCache(string $packageCachePath): CacheInterface
+    {
+        return $this->clusterConfigCacheFactory !== null ?
+            ($this->clusterConfigCacheFactory)($packageCachePath) :
+            new ArrayCache();
     }
 
     /**

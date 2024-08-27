@@ -22,6 +22,7 @@ use Nytris\Memcached\Memcached\MemcachedHook;
 use Nytris\Memcached\MemcachedPackageInterface;
 use Nytris\Memcached\Tests\AbstractTestCase;
 use Nytris\Memcached\Tests\Functional\Harness\TestMemcachedConnector;
+use React\Cache\ArrayCache;
 use React\Socket\Connector;
 use Tasque\Core\Scheduler\ContextSwitch\ManualStrategy;
 use Tasque\EventLoop\ContextSwitch\FutureTickScheduler;
@@ -65,6 +66,7 @@ class SimpleMemcachedIoTest extends AbstractTestCase
                 // Enable dynamic mode, even though this will not be available,
                 // to test that we can correctly fall back when connecting to a non-ElastiCache Memcached instance.
                 'getClientMode' => ClientMode::DYNAMIC,
+                'getClusterConfigCache' => new ArrayCache(),
                 'getConnector' => new Connector(),
                 'getMemcachedClassHookFilter' => new FileFilter(dirname(__DIR__) . '/Harness/**')
             ])
