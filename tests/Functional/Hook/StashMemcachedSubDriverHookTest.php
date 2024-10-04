@@ -75,6 +75,10 @@ class StashMemcachedSubDriverHookTest extends AbstractTestCase
             'uninstall' => null,
         ]);
 
+        $this->library->allows('resolveOptimalHost')
+            ->andReturnUsing(fn (ClusterNodeInterface $clusterNode) => $clusterNode->getHost())
+            ->byDefault();
+
         Memcached::setLibrary($this->library);
     }
 

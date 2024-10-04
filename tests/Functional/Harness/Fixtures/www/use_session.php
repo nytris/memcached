@@ -22,6 +22,7 @@ use Nytris\Memcached\Library\ClientMode;
 use Nytris\Memcached\Library\Library;
 use Nytris\Memcached\Memcached;
 use Nytris\Memcached\MemcachedPackageInterface;
+use Nytris\Memcached\Resolver\HostResolver;
 use Nytris\Memcached\Session\NativeMemcachedSessionHandler;
 use Nytris\Memcached\Session\SavePathProcessor;
 use React\Cache\ArrayCache;
@@ -61,15 +62,18 @@ Memcached::install(
         'getClientMode' => ClientMode::DYNAMIC,
         'getClusterConfigCache' => new ArrayCache(),
         'getConnector' => new Connector(),
+        'getDnsResolver' => null,
         'getMemcachedClassHookFilter' => $memcachedClassHookFilter,
     ])
 );
 
 $clusterConfigClient = mock(ClusterConfigClientInterface::class);
+$hostResolver = new HostResolver(dnsResolver: null);
 $library = new Library(
     new Environment(),
     $clusterConfigClient,
-    new SavePathProcessor($clusterConfigClient),
+    $hostResolver,
+    new SavePathProcessor($clusterConfigClient, $hostResolver),
     new CodeShift(),
     memcachedClassHookFilter: $memcachedClassHookFilter
 );
@@ -82,6 +86,7 @@ $clusterConfigClient->allows()
             mock(ClusterNodeInterface::class, [
                 'getHost' => '127.0.0.1',
                 'getPort' => 11211,
+                'getPrivateIp' => null,
             ]),
         ],
     ]));

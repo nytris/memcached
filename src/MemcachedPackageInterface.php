@@ -17,6 +17,7 @@ use Asmblah\PhpCodeShift\Shifter\Filter\FileFilterInterface;
 use Nytris\Core\Package\PackageInterface;
 use Nytris\Memcached\Library\ClientMode;
 use React\Cache\CacheInterface;
+use React\Dns\Resolver\ResolverInterface;
 use React\Socket\ConnectorInterface;
 
 /**
@@ -42,6 +43,11 @@ interface MemcachedPackageInterface extends PackageInterface
      * Fetches the ReactPHP socket connector to use.
      */
     public function getConnector(string $packageCachePath): ConnectorInterface;
+
+    /**
+     * Fetches the ReactPHP DNS resolver to use, if any.
+     */
+    public function getDnsResolver(string $packageCachePath): ?ResolverInterface;
 
     /**
      * Fetches the filter for which files to hook the Memcached built-in class for.

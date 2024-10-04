@@ -33,7 +33,9 @@ class MemcachedHook extends Memcached
         $clusterConfig = NytrisMemcached::getClusterConfig($host, $port);
 
         foreach ($clusterConfig->getNodes() as $clusterNode) {
-            if (!parent::addServer($clusterNode->getHost(), $clusterNode->getPort())) {
+            $optimalHost = NytrisMemcached::resolveOptimalHost($clusterNode);
+
+            if (!parent::addServer($optimalHost, $clusterNode->getPort())) {
                 return false;
             }
         }

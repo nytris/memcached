@@ -15,6 +15,7 @@ namespace Nytris\Memcached;
 
 use Nytris\Core\Package\PackageFacadeInterface;
 use Nytris\Memcached\Cluster\ClusterConfigInterface;
+use Nytris\Memcached\Cluster\ClusterNodeInterface;
 use Nytris\Memcached\Environment\EnvironmentInterface;
 use Nytris\Memcached\Library\LibraryInterface;
 
@@ -46,6 +47,13 @@ interface MemcachedInterface extends PackageFacadeInterface
      * Handles dynamic mode/auto-discovery mode for the given session save path.
      */
     public static function processSessionSavePath(string $savePath): string;
+
+    /**
+     * Resolves the given cluster node to the most optimal host.
+     *
+     * Uses private IP if available, otherwise resolves the host via DNS if enabled.
+     */
+    public static function resolveOptimalHost(ClusterNodeInterface $clusterNode): string;
 
     /**
      * Overrides the current library installation with the given one.

@@ -66,7 +66,11 @@ class ClusterConfigParser implements ClusterConfigParserInterface
 
             ['host' => $host, 'privateIp' => $privateIp, 'port' => $port] = $matches;
 
-            $nodes[] = new ClusterNode($host, $privateIp === '' ? null : $privateIp, (int) $port);
+            $nodes[] = new ClusterNode(
+                host: $host,
+                privateIp: $privateIp === '' ? null : $privateIp,
+                port: (int) $port
+            );
         }
 
         return new ClusterConfig((int) $configVersion, $nodes);

@@ -71,6 +71,7 @@ class NativeMemcachedSessionHandlerTest extends AbstractTestCase
                 'getClientMode' => ClientMode::DYNAMIC,
                 'getClusterConfigCache' => new ArrayCache(),
                 'getConnector' => new Connector(),
+                'getDnsResolver' => null,
                 'getMemcachedClassHookFilter' => new FileFilter(dirname(__DIR__) . '/Harness/**')
             ])
         );

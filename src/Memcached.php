@@ -22,11 +22,13 @@ use Nytris\Memcached\Cluster\CachingClusterConfigClient;
 use Nytris\Memcached\Cluster\ClusterConfigClient;
 use Nytris\Memcached\Cluster\ClusterConfigInterface;
 use Nytris\Memcached\Cluster\ClusterConfigParser;
+use Nytris\Memcached\Cluster\ClusterNodeInterface;
 use Nytris\Memcached\Environment\Environment;
 use Nytris\Memcached\Environment\EnvironmentInterface;
 use Nytris\Memcached\Library\Library;
 use Nytris\Memcached\Library\LibraryInterface;
 use Nytris\Memcached\Memcached\Io;
+use Nytris\Memcached\Resolver\HostResolver;
 use Nytris\Memcached\Serialiser\Serialiser;
 use Nytris\Memcached\Session\SavePathProcessor;
 
@@ -118,6 +120,9 @@ class Memcached implements MemcachedInterface
 
         self::bootstrap();
 
+        $dnsResolver = $package->getDnsResolver($packageContext->getPackageCachePath());
+        $hostResolver = new HostResolver($dnsResolver);
+
         $clusterConfigClient = new CachingClusterConfigClient(
             new ClusterConfigClient(
                 $package->getClientMode(),
@@ -132,7 +137,8 @@ class Memcached implements MemcachedInterface
         self::$library = new Library(
             new Environment(),
             $clusterConfigClient,
-            new SavePathProcessor($clusterConfigClient),
+            $hostResolver,
+            new SavePathProcessor($clusterConfigClient, $hostResolver),
             new CodeShift(),
             $package->getMemcachedClassHookFilter()
         );
@@ -152,6 +158,14 @@ class Memcached implements MemcachedInterface
     public static function processSessionSavePath(string $savePath): string
     {
         return self::getLibrary()->processSessionSavePath($savePath);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function resolveOptimalHost(ClusterNodeInterface $clusterNode): string
+    {
+        return self::getLibrary()->resolveOptimalHost($clusterNode);
     }
 
     /**

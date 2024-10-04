@@ -21,9 +21,11 @@ use LogicException;
 use Memcached;
 use Mockery\MockInterface;
 use Nytris\Memcached\Cluster\ClusterConfigClientInterface;
+use Nytris\Memcached\Cluster\ClusterNodeInterface;
 use Nytris\Memcached\Environment\EnvironmentInterface;
 use Nytris\Memcached\Library\Library;
 use Nytris\Memcached\Memcached\MemcachedHook;
+use Nytris\Memcached\Resolver\HostResolverInterface;
 use Nytris\Memcached\Session\SavePathProcessorInterface;
 use Nytris\Memcached\Tests\AbstractTestCase;
 
@@ -37,6 +39,7 @@ class LibraryTest extends AbstractTestCase
     private MockInterface&ClusterConfigClientInterface $clusterConfigClient;
     private MockInterface&CodeShiftInterface $codeShift;
     private MockInterface&EnvironmentInterface $environment;
+    private MockInterface&HostResolverInterface $hostResolver;
     private Library $library;
     private MockInterface&FileFilterInterface $memcachedClassHookFilter;
     private MockInterface&SavePathProcessorInterface $sessionSavePathProcessor;
@@ -48,6 +51,7 @@ class LibraryTest extends AbstractTestCase
             'shift' => null,
         ]);
         $this->environment = mock(EnvironmentInterface::class);
+        $this->hostResolver = mock(HostResolverInterface::class);
         $this->memcachedClassHookFilter = mock(FileFilterInterface::class);
         $this->sessionSavePathProcessor = mock(SavePathProcessorInterface::class);
 
@@ -59,6 +63,7 @@ class LibraryTest extends AbstractTestCase
         $this->library = new Library(
             $this->environment,
             $this->clusterConfigClient,
+            $this->hostResolver,
             $this->sessionSavePathProcessor,
             $this->codeShift,
             $this->memcachedClassHookFilter
@@ -77,6 +82,7 @@ class LibraryTest extends AbstractTestCase
         new Library(
             $this->environment,
             $this->clusterConfigClient,
+            $this->hostResolver,
             $this->sessionSavePathProcessor,
             $this->codeShift,
             $this->memcachedClassHookFilter
@@ -98,6 +104,7 @@ class LibraryTest extends AbstractTestCase
         new Library(
             $this->environment,
             $this->clusterConfigClient,
+            $this->hostResolver,
             $this->sessionSavePathProcessor,
             $this->codeShift,
             $this->memcachedClassHookFilter
@@ -121,5 +128,15 @@ class LibraryTest extends AbstractTestCase
             ->andReturn('my result');
 
         static::assertSame('my result', $this->library->processSessionSavePath('1.2.3.4:5678'));
+    }
+
+    public function testResolveOptimalHostGoesViaHostResolver(): void
+    {
+        $clusterNode = mock(ClusterNodeInterface::class);
+        $this->hostResolver->allows()
+            ->resolveOptimalHost($clusterNode)
+            ->andReturn('my.optimal.host');
+
+        static::assertSame('my.optimal.host', $this->library->resolveOptimalHost($clusterNode));
     }
 }
