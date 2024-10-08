@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Nytris\Memcached\Session;
 
 use Nytris\Memcached\Cluster\ClusterConfigClientInterface;
+use Nytris\Memcached\Resolver\HostResolverInterface;
 
 /**
  * Class SavePathProcessor.
@@ -27,7 +28,8 @@ class SavePathProcessor implements SavePathProcessorInterface
     public const DEFAULT_MEMCACHED_PORT = 11211;
 
     public function __construct(
-        private readonly ClusterConfigClientInterface $clusterConfigClient
+        private readonly ClusterConfigClientInterface $clusterConfigClient,
+        private readonly HostResolverInterface $hostResolver
     ) {
     }
 
@@ -57,7 +59,8 @@ class SavePathProcessor implements SavePathProcessorInterface
         $processedSavePathHosts = [];
 
         foreach ($clusterConfig->getNodes() as $clusterNode) {
-            $processedSavePathHosts[] = $clusterNode->getHost() . ':' . $clusterNode->getPort();
+            $processedSavePathHosts[] = $this->hostResolver->resolveOptimalHost($clusterNode) .
+                ':' . $clusterNode->getPort();
         }
 
         // Add all auto-discovered Memcached cluster nodes to the session save path.

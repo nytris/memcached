@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Nytris\Memcached\Library;
 
 use Nytris\Memcached\Cluster\ClusterConfigClientInterface;
+use Nytris\Memcached\Cluster\ClusterNodeInterface;
 use Nytris\Memcached\Environment\EnvironmentInterface;
 
 /**
@@ -39,6 +40,13 @@ interface LibraryInterface
      * Handles dynamic mode/auto-discovery mode for the given session save path.
      */
     public function processSessionSavePath(string $savePath): string;
+
+    /**
+     * Resolves the given cluster node to the most optimal host.
+     *
+     * Uses private IP if available, otherwise resolves the host via DNS if enabled.
+     */
+    public function resolveOptimalHost(ClusterNodeInterface $clusterNode): string;
 
     /**
      * Uninstalls this installation of the library.

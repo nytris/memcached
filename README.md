@@ -60,6 +60,49 @@ $bootConfig->installPackage(new MemcachedPackage(
 return $bootConfig;
 ```
 
+### Optimised host resolution
+
+Where possible, the private IP returned from AWS ElastiCache auto-discovery will be used.
+Otherwise, if the `$dnsResolverFactory` constructor argument is provided to `MemcachedPackage`,
+the host returned will be resolved by the given ReactPHP DNS resolver, which can then be cached,
+unlike the PECL ext-memcached DNS resolution which is not.
+
+```shell
+$ composer require nytris/dns
+```
+
+`nytris.config.php`
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Nytris\Dns\Dns;
+use Nytris\Memcached\MemcachedPackage;
+
+// ...
+
+$bootConfig->installPackage(new MemcachedPackage(
+    // Use dynamic mode/auto-discovery when connecting to an AWS ElastiCache cluster.
+    clientMode: ClientMode::DYNAMIC,
+
+    // Perform DNS lookups via ReactPHP DNS resolver.
+    // Note that $cachePath is provided as a convenient way to refer to the cache directory
+    // if using an on-disk cache.
+    dnsResolverFactory: static fn (string $cachePath) => (new Dns())->createResolver(
+        cache: new ReactCacheAdapter(
+            // Cache DNS across requests in APCu.
+            psrCachePool: new LightApcuAdapter(
+                namespace: 'nytris.react_dns',
+            )
+        )
+    )
+));
+
+// ...
+```
+
 ### Sessions support
 
 Sessions are supported with the native `ext-memcached` session handling

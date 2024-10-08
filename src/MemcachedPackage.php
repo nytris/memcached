@@ -20,6 +20,7 @@ use Closure;
 use Nytris\Memcached\Library\ClientMode;
 use React\Cache\ArrayCache;
 use React\Cache\CacheInterface;
+use React\Dns\Resolver\ResolverInterface;
 use React\Socket\Connector;
 use React\Socket\ConnectorInterface;
 
@@ -49,7 +50,11 @@ class MemcachedPackage implements MemcachedPackageInterface
         /**
          * @var Closure(string): CacheInterface
          */
-        private readonly ?Closure $clusterConfigCacheFactory = null
+        private readonly ?Closure $clusterConfigCacheFactory = null,
+        /**
+         * @var Closure(string): ResolverInterface
+         */
+        private readonly ?Closure $dnsResolverFactory = null
     ) {
     }
 
@@ -82,6 +87,16 @@ class MemcachedPackage implements MemcachedPackageInterface
                 'dns' => true,
                 'happy_eyeballs' => false,
             ]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDnsResolver(string $packageCachePath): ?ResolverInterface
+    {
+        return $this->dnsResolverFactory !== null ?
+            ($this->dnsResolverFactory)($packageCachePath) :
+            null;
     }
 
     /**

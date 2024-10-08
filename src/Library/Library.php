@@ -19,8 +19,10 @@ use Asmblah\PhpCodeShift\Shifter\Shift\Shift\ClassHook\ClassHookShiftSpec;
 use LogicException;
 use Memcached;
 use Nytris\Memcached\Cluster\ClusterConfigClientInterface;
+use Nytris\Memcached\Cluster\ClusterNodeInterface;
 use Nytris\Memcached\Environment\EnvironmentInterface;
 use Nytris\Memcached\Memcached\MemcachedHook;
+use Nytris\Memcached\Resolver\HostResolverInterface;
 use Nytris\Memcached\Session\SavePathProcessorInterface;
 
 /**
@@ -35,6 +37,7 @@ class Library implements LibraryInterface
     public function __construct(
         private readonly EnvironmentInterface $environment,
         private readonly ClusterConfigClientInterface $clusterConfigClient,
+        private readonly HostResolverInterface $hostResolver,
         private readonly SavePathProcessorInterface $sessionSavePathProcessor,
         CodeShiftInterface $codeShift,
         FileFilterInterface $memcachedClassHookFilter
@@ -74,6 +77,14 @@ class Library implements LibraryInterface
     public function processSessionSavePath(string $savePath): string
     {
         return $this->sessionSavePathProcessor->processSessionSavePath($savePath);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function resolveOptimalHost(ClusterNodeInterface $clusterNode): string
+    {
+        return $this->hostResolver->resolveOptimalHost($clusterNode);
     }
 
     /**

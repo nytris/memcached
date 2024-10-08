@@ -73,6 +73,7 @@ class MemcachedHookTest extends AbstractTestCase
                 'getClientMode' => ClientMode::DYNAMIC,
                 'getClusterConfigCache' => new ArrayCache(),
                 'getConnector' => new Connector(),
+                'getDnsResolver' => null,
                 'getMemcachedClassHookFilter' => new FileFilter(dirname(__DIR__) . '/Harness/**')
             ])
         );
@@ -82,6 +83,10 @@ class MemcachedHookTest extends AbstractTestCase
             'getClusterConfigClient' => $this->clusterConfigClient,
             'uninstall' => null,
         ]);
+
+        $this->library->allows('resolveOptimalHost')
+            ->andReturnUsing(fn (ClusterNodeInterface $clusterNode) => 'optimal.' . $clusterNode->getHost())
+            ->byDefault();
 
         Memcached::setLibrary($this->library);
 
@@ -113,7 +118,7 @@ class MemcachedHookTest extends AbstractTestCase
         static::assertEquals(
             [
                 [
-                    'host' => '127.0.0.1',
+                    'host' => 'optimal.127.0.0.1',
                     'port' => 11211,
                     'type' => 'TCP',
                 ],
@@ -142,7 +147,7 @@ class MemcachedHookTest extends AbstractTestCase
         static::assertEquals(
             [
                 [
-                    'host' => '127.0.0.1',
+                    'host' => 'optimal.127.0.0.1',
                     'port' => 11211,
                     'type' => 'TCP',
                 ],

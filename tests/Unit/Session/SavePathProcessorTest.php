@@ -17,6 +17,7 @@ use Mockery\MockInterface;
 use Nytris\Memcached\Cluster\ClusterConfigClientInterface;
 use Nytris\Memcached\Cluster\ClusterConfigInterface;
 use Nytris\Memcached\Cluster\ClusterNodeInterface;
+use Nytris\Memcached\Resolver\HostResolverInterface;
 use Nytris\Memcached\Session\SavePathProcessor;
 use Nytris\Memcached\Tests\AbstractTestCase;
 
@@ -28,13 +29,22 @@ use Nytris\Memcached\Tests\AbstractTestCase;
 class SavePathProcessorTest extends AbstractTestCase
 {
     private MockInterface&ClusterConfigClientInterface $clusterConfigClient;
+    private MockInterface&HostResolverInterface $hostResolver;
     private SavePathProcessor $savePathProcessor;
 
     public function setUp(): void
     {
         $this->clusterConfigClient = mock(ClusterConfigClientInterface::class);
+        $this->hostResolver = mock(HostResolverInterface::class);
 
-        $this->savePathProcessor = new SavePathProcessor($this->clusterConfigClient);
+        $this->hostResolver->allows('resolveOptimalHost')
+            ->andReturnUsing(fn (ClusterNodeInterface $clusterNode) => 'optimal.' . $clusterNode->getHost())
+            ->byDefault();
+
+        $this->savePathProcessor = new SavePathProcessor(
+            $this->clusterConfigClient,
+            $this->hostResolver
+        );
     }
 
     public function testProcessSessionSavePathProcessesASingleHost(): void
@@ -55,7 +65,7 @@ class SavePathProcessorTest extends AbstractTestCase
             ]));
 
         static::assertSame(
-            '100.1.2.3:321,200.3.2.1:123',
+            'optimal.100.1.2.3:321,optimal.200.3.2.1:123',
             $this->savePathProcessor->processSessionSavePath('10.20.30.40:1234')
         );
     }
@@ -89,7 +99,7 @@ class SavePathProcessorTest extends AbstractTestCase
             ]));
 
         static::assertSame(
-            '100.1.2.3:321,200.3.2.1:123',
+            'optimal.100.1.2.3:321,optimal.200.3.2.1:123',
             $this->savePathProcessor->processSessionSavePath('10.20.30.40:1234:42')
         );
     }
@@ -112,7 +122,7 @@ class SavePathProcessorTest extends AbstractTestCase
             ]));
 
         static::assertSame(
-            '100.1.2.3:321,200.3.2.1:123',
+            'optimal.100.1.2.3:321,optimal.200.3.2.1:123',
             $this->savePathProcessor->processSessionSavePath('10.20.30.40')
         );
     }
