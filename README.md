@@ -60,7 +60,7 @@ $bootConfig->installPackage(new MemcachedPackage(
 return $bootConfig;
 ```
 
-### Optimised host resolution
+### Optimal host resolution
 
 Where possible, the private IP returned from AWS ElastiCache auto-discovery will be used.
 Otherwise, if the `$dnsResolverFactory` constructor argument is provided to `MemcachedPackage`,
